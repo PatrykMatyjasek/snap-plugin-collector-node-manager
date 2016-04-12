@@ -16,27 +16,27 @@
 		},
 		{
 			"ImportPath": "github.com/intelsdi-x/snap/control/plugin",
-			"Comment": "v0.11.0-beta",
+			"Comment": "v0.13.0-beta",
 			"Rev": "42d9567651258bba268d94701eb171458e459645"
 		},
 		{
 			"ImportPath": "github.com/intelsdi-x/snap/core",
-			"Comment": "v0.11.0-beta",
+			"Comment": "v0.13.0-beta",
 			"Rev": "42d9567651258bba268d94701eb171458e459645"
 		},
 		{
 			"ImportPath": "github.com/intelsdi-x/snap/pkg/ctree",
-			"Comment": "v0.11.0-beta",
+			"Comment": "v0.13.0-beta",
 			"Rev": "42d9567651258bba268d94701eb171458e459645"
 		},
 		{
 			"ImportPath": "github.com/intelsdi-x/snap/pkg/schedule",
-			"Comment": "v0.11.0-beta",
+			"Comment": "v0.13.0-beta",
 			"Rev": "42d9567651258bba268d94701eb171458e459645"
 		},
 		{
 			"ImportPath": "github.com/intelsdi-x/snap/scheduler/wmap",
-			"Comment": "v0.11.0-beta",
+			"Comment": "v0.13.0-beta",
 			"Rev": "42d9567651258bba268d94701eb171458e459645"
 		},
 		{
