@@ -31,6 +31,7 @@ import (
 	"github.com/intelsdi-x/snap/control/plugin"
 	"github.com/intelsdi-x/snap/control/plugin/cpolicy"
 	"github.com/intelsdi-x/snap/core/ctypes"
+	"github.com/intelsdi-x/snap-plugin-utilities/config"
 	"bufio"
 )
 
@@ -232,17 +233,23 @@ func getHosts(config map[string]ctypes.ConfigValue) []string {
 func (ic *IpmiCollector) construct(cfg map[string]ctypes.ConfigValue) {
 	var hostList []string
 	var ipmiLayer ipmi.IpmiAL
-	ic.Mode = getMode(cfg)
-	channel := getChannel(cfg)
-	slave := getSlave(cfg)
-	user := getUser(cfg)
-	pass := getPass(cfg)
+//	ic.Mode = getMode(cfg)
+//	channel := getChannel(cfg)
+//	slave := getSlave(cfg)
+//	user := getUser(cfg)
+//	pass := getPass(cfg)
+	mode, _ := config.GetConfigItem(cfg, "mode")
+	ic.Mode = mode.(string)
+	channel, _ := config.GetConfigItem(cfg, "channel")
+	slave, _ := config.GetConfigItem(cfg, "slave")
+	user, _ := config.GetConfigItem(cfg, "user")
+	pass, _ := config.GetConfigItem(cfg, "pass")
 	host, _ := os.Hostname()
 	if ic.Mode == "legacy_inband" {
-		ipmiLayer = &ipmi.LinuxInBandIpmitool{Device: "ipmitool", Channel: channel, Slave: slave}
+		ipmiLayer = &ipmi.LinuxInBandIpmitool{Device: "ipmitool", Channel: channel.(string), Slave: slave.(string)}
 		hostList = []string{host}
 	} else if ic.Mode == "oob" {
-		ipmiLayer = &ipmi.LinuxOutOfBand{Device: "ipmitool", Channel: channel, Slave: slave, User: user, Pass: pass}
+		ipmiLayer = &ipmi.LinuxOutOfBand{Device: "ipmitool", Channel: channel.(string), Slave: slave.(string), User: user.(string), Pass: pass.(string)}
 		hostList = getHosts(cfg)
 	} else if ic.Mode == "legacy_inband_openipmi" {
 		ipmiLayer = &ipmi.LinuxInband{}
