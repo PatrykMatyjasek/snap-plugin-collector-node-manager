@@ -24,6 +24,7 @@ package ipmi
 import (
 	"sync"
 	"time"
+	"fmt"
 
 	log "github.com/Sirupsen/logrus"
 )
@@ -59,7 +60,7 @@ func (al *LinuxOutOfBand) BatchExecRaw(requests []IpmiRequest, host string) ([]I
 	wg.Wait()
 	b := time.Now()
 	c := (b.Second() - a.Second())
-	log.Debug("[COLLECTION] Collection took: ", c)
+	fmt.Println("[COLLECTION] Collection took: ", c)
 
 	return results, nil
 

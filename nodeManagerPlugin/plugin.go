@@ -105,7 +105,7 @@ func (ic *IpmiCollector) CollectMetrics(mts []plugin.PluginMetricType) ([]plugin
 		for i, resp := range hostResponses {
 			format := requestDescList[nmResponseIdx][i].Format
 			if err := format.Validate(resp); err != nil {
-				return nil, err
+				resp.IsValid = 0
 			}
 			submetrics := format.Parse(resp)
 			for k, v := range submetrics {
@@ -122,16 +122,14 @@ func (ic *IpmiCollector) CollectMetrics(mts []plugin.PluginMetricType) ([]plugin
 	responseMetrics = make([]plugin.PluginMetricType, 0)
 	t := time.Now()
 
-	for _, host := range ic.Hosts {
-		for i, mt := range mts {
-			ns := mt.Namespace()
-			key := parseName(ns)
-			data := responseCache[host][key]
-			metric := plugin.PluginMetricType{Namespace_: ns, Source_: host,
-				Timestamp_: t, Data_: data}
-			results[i] = metric
-			responseMetrics = append(responseMetrics, metric)
-		}
+	for i, mt := range mts {
+		ns := mt.Namespace()
+		key := parseName(ns)
+		data := responseCache[ns[2]][key]
+		metric := plugin.PluginMetricType{Namespace_: ns, Source_: ns[2],
+			Timestamp_: t, Data_: data}
+		results[i] = metric
+		responseMetrics = append(responseMetrics, metric)
 	}
 
 	return responseMetrics, nil
