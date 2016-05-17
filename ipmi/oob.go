@@ -79,29 +79,31 @@ func (al *LinuxOutOfBand) GetPlatformCapabilities(requests []RequestDescription,
 	var wg sync.WaitGroup
 
 	a := time.Now()
+	response := make(map[string]map[int][]byte)
 	for _, addr := range host {
 		validRequests[addr] = make([]RequestDescription, 0)
 		wg.Add(len(requests))
-		response := make(map[int][]byte)
+		response[addr] = make(map[int][]byte)
 
 		for iterator, req := range requests {
 			go func(req RequestDescription, addr string, iterator int) {
+			    response[addr][iterator] = make([]byte, 0)
 
-				response[iterator] = ExecIpmiToolRemote(req.Request.Data, al, addr)
-				//time.Sleep(time.Second * 5)
+				response[addr][iterator] = ExecIpmiToolRemote(req.Request.Data, al, addr)
+				time.Sleep(time.Second)
 				j := 0
 
-				for i := range response[iterator] {
-					if response[iterator][i] == 0 {
+				for i := range response[addr][iterator] {
+					if response[addr][iterator][i] == 0 {
 						j++
 					}
 				}
-				if j != len(response[iterator]) {
+				if j != len(response[addr][iterator]) {
 					validRequests[addr] = append(validRequests[addr], req)
 				}
 
 				wg.Done()
-			}(req, addr)
+			}(req, addr, iterator)
 		}
 		wg.Wait()
 		b := time.Now()
