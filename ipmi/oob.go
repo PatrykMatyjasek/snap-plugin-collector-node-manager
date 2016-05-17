@@ -52,9 +52,9 @@ func (al *LinuxOutOfBand) BatchExecRaw(requests []IpmiRequest, host string) ([]I
 	for i, r := range requests {
 		go func(i int, r IpmiRequest) {
 			defer wg.Done()
-			al.mutex.Lock()
+			//al.mutex.Lock()
 			results[i] = fillStruct(r.Data, al, host)
-			al.mutex.Unlock()
+			//al.mutex.Unlock()
 		}(i, r)
 	}
 	wg.Wait()
@@ -82,20 +82,21 @@ func (al *LinuxOutOfBand) GetPlatformCapabilities(requests []RequestDescription,
 	for _, addr := range host {
 		validRequests[addr] = make([]RequestDescription, 0)
 		wg.Add(len(requests))
+		response := make(map[int][]byte)
 
-		for _, req := range requests {
-			go func(req RequestDescription, addr string) {
+		for iterator, req := range requests {
+			go func(req RequestDescription, addr string, iterator int) {
 
-				a := ExecIpmiToolRemote(req.Request.Data, al, addr)
-				time.Sleep(time.Second() * 5)
+				response[iterator] = ExecIpmiToolRemote(req.Request.Data, al, addr)
+				//time.Sleep(time.Second * 5)
 				j := 0
 
-				for i := range a {
-					if a[i] == 0 {
+				for i := range response[iterator] {
+					if response[iterator][i] == 0 {
 						j++
 					}
 				}
-				if j != len(a) {
+				if j != len(response[iterator]) {
 					validRequests[addr] = append(validRequests[addr], req)
 				}
 
