@@ -45,19 +45,18 @@ type LinuxOutOfBand struct {
 // Error is returned when any of requests failed.
 func (al *LinuxOutOfBand) BatchExecRaw(requests []IpmiRequest, host string) ([]IpmiResponse, error) {
 	var wg sync.WaitGroup
-	wg.Add(len(requests))
 	results := make([]IpmiResponse, len(requests))
-
 	a := time.Now()
 	for i, r := range requests {
+		wg.Add(1)
 		go func(i int, r IpmiRequest) {
 			defer wg.Done()
 			//al.mutex.Lock()
 			results[i] = fillStruct(r.Data, al, host)
 			//al.mutex.Unlock()
 		}(i, r)
+		wg.Wait()
 	}
-	wg.Wait()
 	b := time.Now()
 	c := (b.Second() - a.Second())
 	fmt.Println("[COLLECTION] Collection took: ", c)
@@ -82,17 +81,19 @@ func (al *LinuxOutOfBand) GetPlatformCapabilities(requests []RequestDescription,
 	response := make(map[string]map[int][]byte)
 	for _, addr := range host {
 		validRequests[addr] = make([]RequestDescription, 0)
-		wg.Add(len(requests))
+		
 		response[addr] = make(map[int][]byte)
 
 		for iterator, req := range requests {
+			wg.Add(1)
 			go func(req RequestDescription, addr string, iterator int) {
-			    response[addr][iterator] = make([]byte, 0)
+				defer wg.Done()
+			    	response[addr][iterator] = make([]byte, 0)
 
 				response[addr][iterator] = ExecIpmiToolRemote(req.Request.Data, al, addr)
 				time.Sleep(time.Second)
 				j := 0
-
+	
 				for i := range response[addr][iterator] {
 					if response[addr][iterator][i] == 0 {
 						j++
@@ -102,10 +103,9 @@ func (al *LinuxOutOfBand) GetPlatformCapabilities(requests []RequestDescription,
 					validRequests[addr] = append(validRequests[addr], req)
 				}
 
-				wg.Done()
 			}(req, addr, iterator)
+			wg.Wait()
 		}
-		wg.Wait()
 		b := time.Now()
 		c := (b.Second() - a.Second())
 		log.Debug("[INIT] Initialization took: ", c)
