@@ -87,7 +87,7 @@ func (al *LinuxOutOfBand) GetPlatformCapabilities(requests []RequestDescription,
 			go func(req RequestDescription, addr string) {
 
 				a := ExecIpmiToolRemote(req.Request.Data, al, addr)
-				time.Sleep(time.Second() * 5)
+				time.Sleep(time.Second * 5)
 				j := 0
 
 				for i := range a {
