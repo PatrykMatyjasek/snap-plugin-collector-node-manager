@@ -85,9 +85,9 @@ func (al *LinuxOutOfBand) GetPlatformCapabilities(requests []RequestDescription,
 
 		for _, req := range requests {
 			go func(req RequestDescription, addr string) {
-				al.mutex.Lock()
+
 				a := ExecIpmiToolRemote(req.Request.Data, al, addr)
-				al.mutex.Unlock()
+				time.Sleep(time.Second() * 5)
 				j := 0
 
 				for i := range a {
