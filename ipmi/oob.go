@@ -90,7 +90,7 @@ func (al *LinuxOutOfBand) GetPlatformCapabilities(requests []RequestDescription,
 				time.Sleep(time.Second() * 5)
 				j := 0
 
-				for i := range a {ps aux | g
+				for i := range a {
 					if a[i] == 0 {
 						j++
 					}
