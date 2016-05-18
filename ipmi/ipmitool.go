@@ -66,7 +66,7 @@ func ExecIpmiToolRemote(request []byte, strct *LinuxOutOfBand, addr string) []by
 		return nil
 	}
 
-	a := []string{"-I", "lanplus", "-H", addr, "-U", strct.User, "-P", strct.Pass, "-b", strct.Channel, "-t", strct.Slave, "raw"}
+	a := []string{"-I", "lanplus", "-R 1", "-N 3", "-H", addr, "-U", strct.User, "-P", strct.Pass, "-b", strct.Channel, "-t", strct.Slave, "raw"}
 	for i := range request {
 		a = append(a, fmt.Sprintf("0x%02x", request[i]))
 	}
@@ -76,8 +76,11 @@ func ExecIpmiToolRemote(request []byte, strct *LinuxOutOfBand, addr string) []by
 		log.Debug("Unable to run ipmitool")
 		return nil
 	}
-
+	if strings.Contains(string(ret), "Error: Unable to establish IPMI v2 / RMCP+ session") {
+		return []byte{0xEE, 0xEE}
+	}
 	returnStrings := strings.Split(string(ret), " ")
+
 	rets := make([]byte, len(returnStrings))
 	for ind, el := range returnStrings {
 		value, _ := strconv.ParseInt(el, 16, 0)

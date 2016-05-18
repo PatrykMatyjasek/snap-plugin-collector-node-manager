@@ -78,30 +78,46 @@ func (al *LinuxOutOfBand) GetPlatformCapabilities(requests []RequestDescription,
 	var wg sync.WaitGroup
 
 	a := time.Now()
+	responses := make(map[string]map[int][]byte)
+	validHosts := make([]string, 0)
+	var resp []byte
 	for _, addr := range host {
+		resp = ExecIpmiToolRemote([]byte{0x06, 0x01}, al, addr) //Get Device ID
+		if resp[0] != byte(0xEE) && resp[1] != byte(0xEE) {
+			validHosts = append(validHosts, addr)
+		}
+	}
+
+	for _, addr := range validHosts {
+		responses[addr] = make(map[int][]byte)
 		validRequests[addr] = make([]RequestDescription, 0)
+		valid_host := true
+
 		wg.Add(len(requests))
 
-		for _, req := range requests {
-			go func(req RequestDescription, addr string) {
-				al.mutex.Lock()
-				a := ExecIpmiToolRemote(req.Request.Data, al, addr)
-				al.mutex.Unlock()
-				j := 0
+		for iter, req := range requests {
+			responses[addr][iter] = make([]byte, 0)
+			if valid_host {
+				go func(req RequestDescription, addr string) {
+					defer wg.Done()
+					al.mutex.Lock()
+					responses[addr][iter] = ExecIpmiToolRemote(req.Request.Data, al, addr)
+					al.mutex.Unlock()
+					j := 0
 
-				for i := range a {
-					if a[i] == 0 {
-						j++
+					for i := range responses[addr][iter] {
+						if responses[addr][iter][i] == 0 {
+							j++
+						}
 					}
-				}
-				if j != len(a) {
-					validRequests[addr] = append(validRequests[addr], req)
-				}
-
-				wg.Done()
-			}(req, addr)
+					if j != len(responses[addr][iter]) {
+						validRequests[addr] = append(validRequests[addr], req)
+					}
+				}(req, addr)
+				wg.Wait()
+			}
 		}
-		wg.Wait()
+
 		b := time.Now()
 		c := (b.Second() - a.Second())
 		log.Debug("[INIT] Initialization took: ", c)
