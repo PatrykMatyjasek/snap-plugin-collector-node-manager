@@ -1,10 +1,6 @@
-# DISCONTINUATION OF PROJECT 
-
-**This project will no longer be maintained by Intel.  Intel will not provide or guarantee development of or support for this project, including but not limited to, maintenance, bug fixes, new releases or updates.  Patches to this project are no longer accepted by Intel. If you have an ongoing need to use this project, are interested in independently developing it, or would like to maintain patches for the community, please create your own fork of the project.**
-
 # Plugin status
 
-This plugin is no longer being actively maintained by intel. Work has instead shifted to the [intel-dcm-platform](https://github.com/intelsdi-x/snap-plugin-collector-intel-dcm-platform) plugin.
+This plugin is actively maintained by @PatrykMatyjasek.
 
 # snap collector plugin - Intel Node Manager
 
@@ -38,9 +34,9 @@ This plugin is no longer being actively maintained by intel. Work has instead sh
 You can get the pre-built binaries for your OS and architecture at plugin's [Github Releases](releases) page.
 
 #### To build the plugin binary:
-Fork https://github.com/intelsdi-x/snap-plugin-collector-node-manager
+Fork https://github.com/PatrykMatyjasek/snap-plugin-collector-node-manager
 
-Clone repo into `$GOPATH/src/github/intelsdi-x/`:
+Clone repo into `$GOPATH/src/github/PatrykMatyjasek/`:
 ```
 $ git clone https://github.com/<yourGithubID>/snap-plugin-collector-node-manager
 ```
@@ -193,8 +189,6 @@ There's more than one way to give back, from examples to blogs to code updates. 
 
 ## Acknowledgements
 
-* Author: [Lukasz Mroz](https://github.com/lmroz)
-* Author: [Marcin Krolik](https://github.com/marcin-krolik)
 * Author: [Patryk Matyjasek](https://github.com/PatrykMatyjasek)
 
 And **thank you!** Your contribution, through code and participation, is incredibly important to us.
